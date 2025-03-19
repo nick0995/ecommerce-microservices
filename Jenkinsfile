@@ -2,16 +2,16 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = "your-dockerhub-username"
-        DOCKERHUB_PASS = credentials('dockerhub-credentials') // Add this in Jenkins Credentials
-        IMAGE_NAME_FE = "your-dockerhub-username/fe-service"
-        IMAGE_NAME_BE = "your-dockerhub-username/be-service"
+        DOCKERHUB_USER = "neerajchauhan1558@gmail.com"
+        DOCKERHUB_PASS = credentials('higherLogic0907@#') // Add this in Jenkins Credentials
+        IMAGE_NAME_FE = "ecommerce-microservices/fe-service"
+        IMAGE_NAME_BE = "ecommerce-microservices/be-service"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-repo.git'
+                git branch: 'main', url: 'https://github.com/nick0995/ecommerce-microservices.git'
             }
         }
 
