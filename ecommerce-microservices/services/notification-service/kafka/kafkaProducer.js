@@ -1,10 +1,10 @@
 const kafka = require("kafka-node");
 
-const client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKA_BROKER });
+const client = new kafka.KafkaClient({ kafkaHost: "localhost:9092" });
 const producer = new kafka.Producer(client);
 
 producer.on("ready", () => {
-  console.log("Product Service Kafka Producer is ready.");
+  console.log("Kafka Producer is ready.");
 });
 
 producer.on("error", (err) => {
@@ -12,9 +12,7 @@ producer.on("error", (err) => {
 });
 
 const sendNotification = (message) => {
-  const payloads = [
-    { topic: "notifications", messages: JSON.stringify(message) },
-  ];
+  const payloads = [{ topic: "notifications", messages: JSON.stringify(message) }];
   producer.send(payloads, (err, data) => {
     if (err) {
       console.error("Error sending Kafka message:", err);

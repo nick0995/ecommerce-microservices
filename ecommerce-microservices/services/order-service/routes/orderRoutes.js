@@ -1,6 +1,6 @@
 const express = require("express");
 const Order = require("../models/Order");
-const sendNotification = require("../kafkaProducer");
+const sendNotification = require("../kafka/kafkaProducer");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();

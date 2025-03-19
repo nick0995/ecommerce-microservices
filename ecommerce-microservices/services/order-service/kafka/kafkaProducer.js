@@ -4,21 +4,24 @@ const client = new kafka.KafkaClient({ kafkaHost: process.env.KAFKA_BROKER });
 const producer = new kafka.Producer(client);
 
 producer.on("ready", () => {
-  console.log("Kafka Producer is ready for Order Service");
+  console.log("Order Service Kafka Producer is ready.");
 });
 
 producer.on("error", (err) => {
-  console.error("Kafka Producer error:", err);
+  console.error("Kafka Producer Error:", err);
 });
 
 const sendNotification = (message) => {
-  producer.send(
-    [{ topic: "order_notifications", messages: JSON.stringify(message) }],
-    (err, data) => {
-      if (err) console.error("Kafka Send Error:", err);
-      else console.log("Kafka Message Sent:", data);
+  const payloads = [
+    { topic: "notifications", messages: JSON.stringify(message) },
+  ];
+  producer.send(payloads, (err, data) => {
+    if (err) {
+      console.error("Error sending Kafka message:", err);
+    } else {
+      console.log("Order notification sent:", data);
     }
-  );
+  });
 };
 
 module.exports = sendNotification;
