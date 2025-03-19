@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+
+  nginx:
+    image: nginx:1.23.3-alpine-slim
+    container_name: nginx_proxy
+    ports:
+      - "80:80"  # Exposing only the frontend
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # Mounting the NGINX config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - ecommerce
+
+
+  mysql:
+    image: mysql:5.7
+    container_name: ecommerce_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 'ecommerceRootDB@321%'
+      MYSQL_DATABASE: 'ecommerce_backend'
+      MYSQL_USER: 'ecommerce_be'
+      MYSQL_PASSWORD: 'BE@DB@ecommerce@123!'
+    volumes:
+      - mysql-storage:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    restart: always
+    networks:
+      - ecommerce
+
+  backend:
+    image: "docker-hub/ecommerce:v1"
+    container_name: ecommerce_backend
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - /home/ubuntu:/usr/src/app/
+
+    networks:
+      - ecommerce
+    deploy:
+      replicas: 2  # Scale backend dynamically
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+
+  frontend:
+    image: "docker-hub/ecommerce-ui:v1"
+    container_name: ecommerce_ui
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - ecommerce
+    deploy:
+      replicas: 3  # Scale frontend dynamically
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "256M"
+
+networks:
+  ecommerce:
+
+volumes:
+  mysql-storage:
